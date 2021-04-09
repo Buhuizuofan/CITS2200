@@ -1,0 +1,220 @@
+import CITS2200.Deque;
+
+import CITS2200.Overflow;
+
+import CITS2200.Underflow;
+
+/**
+ * This class is designed to implement the Deque interface by using an array. 
+ * The array implements the requirements that supports element insertion and removal at both ends by using two pointers to point out two sides of Deque. 
+ */
+public class DequeCyclic<E> implements Deque <E>{
+    private int before;
+
+    private int after;
+
+
+
+    private E[] items;
+
+    /**
+     * Create an empty deque of size s.
+     * @param s determine the size of deque is s.
+     */
+    @SuppressWarnings("unchecked")
+    public DequeCyclic(int s){
+        items = (E[])new Object[s+1];
+
+        before = s;
+
+        after = 0;
+
+    }
+
+    
+    
+    /**If a is equals to 0 then return items.length -1, otherwise return a-1. 
+     * @param a the index of Deque needs to be decreased.
+     * @return int return the decreased index, the type is int.
+     */
+    public int decrease (int a){
+        if(a == 0){
+            return items.length -1;
+        }else return (a-1);
+    }
+
+    
+    /** If a is equals items.length -1 then return 0, otherwise return a+1. 
+     * @param a the index of Deque needs to be increased.
+     * @return int return the increased index, the type is int.
+     */
+    public int increase (int a){
+        if(a == items.length-1){
+            return 0;
+        }else return (a+1);
+    }
+
+    
+    /**Return true if the deque is empty, false otherwise.
+     * @return boolean if before is equals to decrease(after), then return true, otherwise return false.
+     */
+    @Override
+
+    public boolean isEmpty() {       
+
+        return before == decrease(after);
+
+    }
+
+
+
+    
+    /**Return true if the deque is full, false otherwise.
+     * @return boolean if before is equals to after, then return true, otherwise return false.
+     */
+    @Override
+
+    public boolean isFull() {
+
+        return before == after;
+
+    }
+
+
+
+    
+    /**Return the left-most object in the deque, or throw an Overflow exception if the deque is full.
+     * @return E return the left-most object in the deque.
+     * @throws Underflow if the deque is empty then throw an Underflow exception.
+     */
+    @Override
+
+    public E peekLeft() throws Underflow {
+
+        if(!isEmpty()){
+
+            int index = increase(before);
+
+            return items[index];
+
+        } 
+            else throw new Underflow("examining empty deque");
+
+
+    }
+
+
+
+    
+    /**Return the right-most object in the deque, or throw an Underflow exception if the deque is empty.
+     * @return E return the right-most object in the deque
+     * @throws Underflow if the deque is empty then throw an Underflow exception.
+     */
+    @Override
+
+    public E peekRight() throws Underflow {
+
+        if(!isEmpty()){
+
+            int index = decrease(after);
+
+            return items[index];
+
+        }else throw new Underflow("examining empty deque");
+
+    }
+
+
+
+    
+    /**Remove and return the left-most object in the deque, or throw an Underflow exception if the deque is empty.
+     * @return E return the left-most object in the deque.
+     * @throws Underflow if the deque is empty then throw an Underflow exception.
+     */
+    @Override
+
+    public E popLeft() throws Underflow {
+
+        if(!isEmpty()){
+
+            before = increase(before);
+           
+            E temp = items[before];
+
+            items[before] = null;
+
+            return temp;
+
+        }else throw new Underflow("poping from empty deque");
+
+
+    }
+
+
+
+    
+    /**Remove and return the right-most object in the deque, or throw an Underflow exception if the deque is empty.
+     * @return E return the right-most object in the deque.
+     * @throws Underflow if the deque is empty then throw an Underflow exception.
+     */
+    @Override
+
+    public E popRight() throws Underflow {
+
+        if(!isEmpty()){
+
+            after = decrease(after);
+
+            E temp2 = items[after];
+
+            items[after] = null;
+
+            return temp2;
+
+        }else throw new Underflow("poping from empty deque");
+
+    }
+
+
+
+    
+    /**Add object c as the left-most object in the deque, or throw an Overflow exception if the deque is full.
+     * @param c Object c is needed to be pushed inside.
+     * @throws Overflow show Overflow exception if the deque is full.
+     */
+    @Override
+
+    public void pushLeft(E c) throws Overflow {
+
+        if(!isFull()){
+
+            items[before] = c;
+
+            before = decrease(before);
+
+        }else throw new Overflow("pushing to full deque");
+    }
+
+
+
+    
+    /**Add object c as the right-most object in the deque, or throw an Overflow exception if the deque is full. 
+     * @param c Object c is needed to be pushed inside.
+     * @throws Overflow show Overflow exception if the deque is full.
+     */
+    @Override
+
+    public void pushRight(E c) throws Overflow {
+
+        if(!isFull()){
+
+            items[after] = c;
+
+            after = increase(after);
+
+        }else throw new Overflow("pushing to full deque");
+    }
+
+
+
+}
