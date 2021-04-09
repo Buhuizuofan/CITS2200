@@ -1,0 +1,185 @@
+import CITS2200.Link;
+import CITS2200.List;
+import CITS2200.OutOfBounds;
+import CITS2200.WindowLinked;
+
+/**This class is designed to implement the List interface by using link. 
+ * This class implements the requirements that supports element insertion and removal by using the WindowLinked class.
+ */
+public class ListLinked implements List{
+    private Link before;
+    private Link after;
+   
+    /**
+     *Constructs an empty list.
+     */
+    public ListLinked(){
+        after = new Link(null, null);
+        before = new Link(null, after);
+    }
+
+    
+    /**let the window point to the end of the list. 
+     * @param arg0 the type is WindowLinked.
+     */
+    @Override
+    public void afterLast(WindowLinked arg0) {
+        arg0.link = after;       
+    }
+
+    
+    /**let the window point to the start of the list.
+     * @param arg0 the type is WindowLinked.
+     */
+    @Override
+    public void beforeFirst(WindowLinked arg0) {
+        arg0.link = before;
+        
+    }
+
+    
+    /**Deletes the element what the window points and let the window point to the next element. 
+     * @param arg0 the typr is WindowLinked.
+     * @return Object the object needs to be deleted.
+     * @throws OutOfBounds throw an Underflow exception if the window points to the outside of the list.
+     */
+    @Override
+    public Object delete(WindowLinked arg0) throws OutOfBounds {
+        if(!isBeforeFirst(arg0) && !isAfterLast(arg0)){
+            Object result = arg0.link.item;
+            if(arg0.link.successor == after){
+                after = arg0.link;
+                return arg0.link.item;
+            }else{
+            arg0.link.item = arg0.link.successor.item;
+            arg0.link.successor = arg0.link.successor.successor;
+            }
+            return result;
+        }
+        else throw new OutOfBounds("Deleting from outside of list");
+    }
+
+    
+    /**Determine the element what the window points. 
+     * @param arg0 the type is WindowLinked
+     * @return Object the element pointed by the window.
+     * @throws OutOfBounds throw an Underflow exception if the window points to the outside of the list.
+     */
+    @Override
+    public Object examine(WindowLinked arg0) throws OutOfBounds {
+        if(!isBeforeFirst(arg0) && !isAfterLast(arg0)){
+            return arg0.link.item;
+        }else throw new OutOfBounds("Window is outside of list");
+    }
+
+    
+    /**Inserts the element @arg0 after the position what the window points. 
+     * @param arg0 the object needs to be inserted.
+     * @param arg1 the type is WindowLinked.
+     * @throws OutOfBounds throw an Underflow exception if the window points to the outside of the list.
+     */
+    @Override
+    public void insertAfter(Object arg0, WindowLinked arg1) throws OutOfBounds {
+        if(!isAfterLast(arg1)){
+            Link temp = new Link(arg0, arg1.link.successor);
+            arg1.link.successor = temp;
+        }else throw new OutOfBounds ("inserting after end of list");
+                  
+    }
+
+    
+    /**Inserts the element @arg0 before the position what the window points. 
+     * @param arg0 the object needs to be inserted.
+     * @param arg1 the type is WindowLinked.
+     * @throws OutOfBounds throw an Underflow exception if the window points to the outside of the list.
+     */
+    @Override
+    public void insertBefore(Object arg0, WindowLinked arg1) throws OutOfBounds {
+        if(!isBeforeFirst(arg1)){
+            arg1.link.successor = new Link(arg1.link.item, arg1.link.successor);
+            if (isAfterLast(arg1))  after = arg1.link.successor;
+            arg1.link.item = arg0;
+            arg1.link = arg1.link.successor;
+        }else throw new OutOfBounds("inserting before start of list");
+        
+    }
+
+    
+    /**Determine whether the window points to the position that behind the end of the list.
+     * @param arg0 the type is WindowLinked
+     * @return boolean if the window points to the end of the list then return true, false otherwise.
+     */
+    @Override
+    public boolean isAfterLast(WindowLinked arg0) {
+        return arg0.link == after;
+    }
+
+    
+    /**Determine whether the window points to the position that in front of the start of the list. 
+     * @param arg0 the type is WindowLinked
+     * @return boolean if the window points to the start of the list then return true, false otherwise.
+     */
+    @Override
+    public boolean isBeforeFirst(WindowLinked arg0) {
+        return arg0.link == before;
+    }
+
+    
+    /**Check whether the list is empty.
+     * @return boolean true if after is next to before, flase otherwise.
+     */
+    @Override
+    public boolean isEmpty() {
+        return before.successor == after;
+    }
+
+    
+    /**let the window point to the next position.
+     * @param arg0 the type is WindowLinked
+     * @throws OutOfBounds throw an Underflow exception if the window points to the outside of the list.
+     */
+    @Override
+    public void next(WindowLinked arg0) throws OutOfBounds {
+        if(!isAfterLast(arg0)){
+            arg0.link = arg0.link.successor;
+        }
+            else throw new OutOfBounds("Calling next after end of list.");
+        }
+    
+
+    
+    /**let the window point to the previous position 
+     * @param arg0 the type is WindowLinked
+     * @throws OutOfBounds throw an Underflow exception if the window points to the outside of the list.
+     */
+    @Override
+    public void previous(WindowLinked arg0) throws OutOfBounds {
+        if (!isBeforeFirst(arg0)) {
+            Link current = before.successor;
+            Link result = before;
+            while (current != arg0.link) {
+            result = current;
+            current = current.successor;
+            }
+            arg0.link = result;
+            }
+            else throw new OutOfBounds ("Calling previous before start of list.");  
+    }
+
+    
+    /**Return the element what the window points.S
+     * @param arg0 the element needs to be replaced to the list.
+     * @param arg1 the type is WindowLinked.
+     * @return Object the element what the window used to point.
+     * @throws OutOfBounds throw an Underflow exception if the window points to the outside of the list.
+     */
+    @Override
+    public Object replace(Object arg0, WindowLinked arg1) throws OutOfBounds {
+        if(!isBeforeFirst(arg1) && !isAfterLast(arg1)){
+            Object result = arg1.link.item;
+            arg1.link.item = arg0;
+            return result;
+        }else throw new OutOfBounds("Replacing from outside of the list");
+    }
+
+}
