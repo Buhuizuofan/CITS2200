@@ -1,0 +1,83 @@
+import CITS2200.Overflow;
+import CITS2200.Stack;
+import CITS2200.Underflow;
+
+
+/**
+ * This class is designed to implement the Stack interface by using an array. 
+ * The array implements the LIFO requirements by letting the new element pushed inside and using a variable to point out the last element. 
+ * 
+ */
+public class StackBlock implements Stack{
+    private int first;
+
+    private Object[] items;
+
+/**Create an empty stack, the size is s.
+ * 
+ * @param s determine the size of stack is s.
+ */
+    public StackBlock(int s){
+        items = new Object[s];
+        first = -1;
+    }
+
+
+    
+    /**If the stack is not empty then return the top object of the stack, otherwise throw an Underflow exception. 
+     * @return Object return the top object of the stack.
+     * @throws Underflow if the stack is empty then throw an Underflow exception.
+     */
+    @Override
+    public Object examine() throws Underflow {
+        if (!isEmpty())  return items[first];
+        else throw new Underflow("examining empty stack");
+    }
+
+ 
+    
+    /** If the stack is empty then return true, otherwise return false.
+     * @return boolean if variable first is equals to -1, then return true, otherwise return false.
+     */
+    @Override
+    public boolean isEmpty() {
+        return first == -1;
+    }
+
+    
+    /** If the stack is full then return true, otherwise return false.
+     * @return boolean if variable first is equals to items.length-1, then return true, otherwise return false.
+     */
+    public boolean isFull(){
+        return first == items.length-1;
+    }
+
+    
+    /**Pushing the Object o inside as the top of the stack if the stack is not empty, otherwise throw an Underflow exception.
+     * @return Object return the top Object of the stack.
+     * @throws Underflow if the stack is empty then throw an Underflow exception.
+     */
+    @Override
+    public Object pop() throws Underflow {
+        if(!isEmpty()){
+            Object a = items[first];
+            first--;
+            return a;
+        }
+        else throw new Underflow("poping from empty stack");
+    }
+
+    
+    /**Pushing the Object o inside of the stack if the stack is not full otherwise throw an Overflow exception. 
+     * @param o Object o is needed to be pushed inside.
+     * @throws Overflow show Overflow exception if the stack is full.
+     */
+    @Override
+    public void push(Object o) throws Overflow {
+        if (!isFull()){
+            first++;
+            items[first] = o;
+        }else throw new Overflow("pushing to full stack");       
+    }
+
+}
