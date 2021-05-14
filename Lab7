@@ -1,0 +1,129 @@
+import CITS2200.IllegalValue;
+import CITS2200.Iterator;
+import CITS2200.OutOfBounds;
+import CITS2200.PriorityQueue;
+import CITS2200.Underflow;
+
+//Yujie Li     22768932//
+public class PriorityQueueLinked implements PriorityQueue<Object>{
+    private Link<Object> first;
+
+    public PriorityQueueLinked(){
+        first = null;
+    }
+    
+    /**
+     * Determine the base structure.
+     * @param <E>
+     */
+    private class Link<E>{
+        Object item;
+        int key;
+        Link<Object> next;
+
+        public Link(Object item, int key, Link<Object> next){
+            this.item = item;
+            this.key = key;
+            this.next = next;
+        }
+    }
+
+    
+    /**
+     * Determine whether the queue is empty.
+     * @return boolean return true if the queue is empty.
+     */
+    @Override
+    public boolean isEmpty(){
+        return first == null;
+    }
+
+    
+    /**
+     * Returns the first object of the queue and removes it.
+     * @return Object the object needs to be removed.
+     * @throws Underflow if the deque is empty then throw an Underflow exception.
+     */
+    @Override
+    public Object dequeue() throws Underflow {
+        if(!isEmpty()){
+            Object result = first.item;
+            first = first.next;
+            return result;
+        }else throw new Underflow("Queue is empty");
+    }
+
+    
+    /**
+     * Push the element inside depends on it's key value. 
+     * @param item the object needs to be added.
+     * @param k value of key.
+     * @throws IllegalValue Error.
+     */
+    @Override
+    public void enqueue(Object item, int k) throws IllegalValue {
+        if(k < 0){
+            throw new IllegalValue("It is illegal");
+        }else{
+            if(isEmpty() || k > first.key){
+                first = new Link<Object>(item, k, first);
+            }else{
+                Link<Object> temp = first;
+                while(temp.next != null && temp.next.key >= k){
+                    temp = temp.next;
+                }
+                temp.next = new Link<Object>(item, k, temp.next);
+            } 
+        } 
+        }
+
+    
+    /**
+     * Return the first object of the queue. 
+     * @return Object the first object of the queue.
+     * @throws Underflow if the deque is empty then throw an Underflow exception.
+     */
+    @Override
+    public Object examine() throws Underflow {
+        if(!isEmpty()){
+            return first.item;
+        }else throw new Underflow("Queue is empty");
+    }
+    
+    
+    /**
+     * Traverse the queue. 
+     * @return Iterator<Object> 
+     */
+    @Override
+    public Iterator<Object> iterator() {
+        return new PriorityIterator(); 
+    }
+
+    /**
+     *Iterator of the queue. 
+     */
+    public class PriorityIterator implements Iterator<Object>{
+        Link<Object> before;
+
+        public PriorityIterator(){
+            before = new Link<Object>(null, 0, first);
+        }
+
+        //Determine whether the reference has the next element.//
+        @Override
+        public boolean hasNext() {  
+            return before.next != null;
+        }
+        
+        //return the next object of the reference, if the deque is empty then throw an OutOfBounds exception.//
+        @Override
+        public Object next() throws OutOfBounds {
+            if(hasNext()){
+                before = before.next;
+                return before.item;
+            }else throw new OutOfBounds("Queue is Empty");
+        }
+
+    }
+}
