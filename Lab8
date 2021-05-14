@@ -1,0 +1,301 @@
+import CITS2200.Graph;
+
+import CITS2200.Path;
+
+import CITS2200.IllegalValue;
+
+import CITS2200.Underflow;
+
+
+
+//Yujie Li      22768932//
+
+public class PathImp implements Path {   
+
+    /**
+
+     * Finds the minimum spanning tree of the graph by using prim's algorithm. 
+
+     * @param g  the provided graph
+
+     * @return int return the weight of the minimum spanning tree, or -1 if no minimum spanning tree can be found.
+
+     */
+
+    public int getMinSpanningTree(Graph g) {
+
+        int number = g.getNumberOfVertices();
+
+        int[] w = new int[number];
+
+        int[] seen = new int[number];
+
+        for (int j = 0; j < number; j++) {
+
+            seen[j] = 0;
+
+            w[j] = 999;
+
+        }
+
+        PriorityQueueLinked q = new PriorityQueueLinked();
+
+        int[][] matrix = g.getEdgeMatrix();
+
+        w[0] = 0;
+
+        q.enqueue(0, 0);
+
+        while (!q.isEmpty()) {
+
+            int x = q.dequeue();
+
+            if (seen[x] == 1) {
+
+                continue;
+
+            }
+
+            seen[x] = 1;
+
+            for (int i = 0; i < number; i++) {
+
+                if (matrix[x][i] != 0 && seen[i] != 1 && matrix[x][i] < w[i]) {
+
+                    q.enqueue(i,matrix[x][i]);
+
+                    w[i] = matrix[x][i];
+
+                }
+
+            }
+
+        }
+
+        int result = 0;
+
+        for (int i = 0; i < number; i++) {
+
+            if (w[i] == 999) {
+
+                return -1;
+
+            } else {
+
+                result += w[i];
+
+            }
+
+        }
+
+        return result;
+
+        
+
+    }
+
+    
+
+    
+
+    
+
+    /**
+
+     * Uses Djikstra's algorithm to return an array of the distances from the specified start vertex to each of the vertices in the graph. 
+
+     * @param g the provided graph.
+
+     * @param start start the starting vertex.
+
+     * @return int[] an array of the distances from the specified start vertex to each of the vertices.
+
+     */
+
+    public int[] getShortestPaths(Graph g, int start) {
+
+
+
+        
+
+        int number = g.getNumberOfVertices();
+
+        if (number == 0) {
+
+            throw new IllegalValue("The graph is empty");
+
+        }
+
+        int[] result = new int[number];
+
+        for (int i = 0; i < number; i++) {
+
+            result[i] = 999;
+
+        }
+
+        PriorityQueueLinked q = new PriorityQueueLinked();
+
+        int[][] matrix = g.getEdgeMatrix();
+
+        q.enqueue(start,0);
+
+        result[start] = 0;
+
+        while (!q.isEmpty()) {
+
+            int x = q.dequeue();
+
+            for (int i = 0; i < g.getNumberOfVertices(); i++) {
+
+                if (matrix[x][i] != 0 && matrix[x][i] + result[x] < result[i]) {
+
+                    q.enqueue(i,matrix[x][i] + result[x]);
+
+                    result[i] = matrix[x][i] + result[x];
+
+                }
+
+            }
+
+        }
+
+        for (int i = 0; i < number; i++) {
+
+            if (result[i] == 999) {
+
+                result[i] = -1;
+
+            }
+
+        }
+
+        return result;
+
+        
+
+    }
+
+
+
+    public class PriorityQueueLinked{
+
+
+
+        private Link first;
+
+    
+
+        public PriorityQueueLinked(){
+
+            first = null;
+
+        }
+
+    
+
+        private class Link{
+
+            int item;
+
+            int key;
+
+            Link next;
+
+    
+
+            public Link(int item, int key, Link next){
+
+                this.item = item;
+
+                this.key = key;
+
+                this.next = next;
+
+            }
+
+        }
+
+    
+
+        
+
+        public boolean isEmpty(){
+
+            return first == null;
+
+        }
+
+    
+
+        
+
+        public int dequeue() throws Underflow {
+
+            if(!isEmpty()){
+
+                int result = first.item;
+
+                first = first.next;
+
+                return result;
+
+            }else throw new Underflow("Queue is empty");
+
+        }
+
+    
+
+        
+
+        public void enqueue(int item, int k) throws IllegalValue {
+
+            if(k < 0){
+
+                throw new IllegalValue("It is illegal");
+
+            }else if(isEmpty() || k < first.key){
+
+                    first = new Link(item, k, first);
+
+                }else{
+
+                    Link temp = first;
+
+                    while( temp.next != null && temp.next.key <= k){
+
+                        temp = temp.next;
+
+                    }
+
+                    temp.next = new Link(item, k, temp.next);
+
+    
+
+                } 
+
+            }
+
+    
+
+        
+
+        public Integer examine() throws Underflow {
+
+            if(!isEmpty()){
+
+                return first.item;
+
+            }else throw new Underflow("Queue is empty");
+
+        }
+
+        
+
+       
+
+    }
+
+    
+
+}
