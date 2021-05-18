@@ -1,88 +1,212 @@
+import java.util.Queue;
+
 import java.util.LinkedList;
-import CITS2200.BinaryTree;
-import CITS2200.Iterator;
-import CITS2200.OutOfBounds;
 
-/**The aim of the subclass BinTree is to complete the equals method and the iterator method by using the methods of BinaryTree.*/ 
-public class BinTree<E> extends BinaryTree<E>{
-    public BinTree(){ super(); }
 
-    public BinTree(E item, BinaryTree<E> b1, BinaryTree<E> b2){ super(item,b1,b2); }
+
+import CITS2200.Graph;
+
+import CITS2200.Search;
+
+
+
+public class SearchImp implements Search{
+
+    int[][] result;
+
     
+
     
-    /**Using recursive method to check whether two trees are equal. 
-     * @param arg0 the type is Object.
-     * @return boolean if two trees are equal then return true, false otherwise.
+
+    
+
+    /** 
+
+     * Get parent vertex for each vertex.
+
+     * @param g graph
+
+     * @param root startVertex
+
+     * @return int[] return an array, the type is int[].
+
      */
-    @Override
-    public boolean equals(Object arg0) {
-        if (arg0 instanceof BinTree<?>) {
-            BinTree<?> t = (BinTree<?>)arg0;
-            if(isEmpty() && t.isEmpty())
-            return true;
-            else if(isEmpty() || t.isEmpty())
-            return false;
-            if(!getItem().equals(t.getItem()))
-            return false;
 
-            return getLeft().equals(t.getLeft()) && getRight().equals(t.getRight());
-        } 
-            return false;
+    @Override
+
+    public int[] getConnectedTree(Graph g, int root) {
+
+        int[] result = new int[g.getNumberOfVertices()];
+
+        for(int j = 1; j < g.getNumberOfVertices(); j++){
+
+            result[j] = -1;
+
+        }
+
+        Queue<Integer> q = new LinkedList<Integer>();
+
+        int matrix[][] = g.getEdgeMatrix();
+
+        q.add(root);
+
+        result[root] = -1;
+
+        while(!q.isEmpty()){
+
+          int x = q.remove();
+
+          for(int i =0; i<g.getNumberOfVertices(); i++){
+
+              if(matrix[x][i] == 1 && result[i] == -1 && i != root){
+
+                  q.add(i);
+
+                  result[i] =x;
+
+              }
+
+          }
+
+        }
+
+        return result;
+
     }
 
+
+
     
-    /**Traverse every element of the tree.  
-     * @return Iterator<E> the type is E.
+
+    /**
+
+     * Get the distance from each vertex to the starting vertex.
+
+     * @param g graph.
+
+     * @param root starting vertex.
+
+     * @return int[] return an array, the type is int[].
+
      */
+
     @Override
-    public Iterator<E> iterator() {
-        
-        return new BinTreeIterator<E>(this);
-    }
-    
-    /**Subclass of the iterator */
-    public class BinTreeIterator<E> implements Iterator<E>{
-        /**Create a queue */
-        private LinkedList<BinaryTree<E>> q = new LinkedList<BinaryTree<E>>();
-        
-        /**Create a pointer, the start position is 0 */
-        private int index =0;
-        
-        /**Checks whether the tree has the next element.
-         * @return if the value of index is less than the size of q then return true, false otherwise.
-         */
-        @Override
-        public boolean hasNext() {
-            return index < q.size();
+
+    public int[] getDistances(Graph g, int root) {
+
+        int[] result = new int[g.getNumberOfVertices()];
+
+        for(int j = 1; j < g.getNumberOfVertices(); j++){
+
+            result[j] = -1;
+
         }
-        
-        /**Get the next element of the tree.
-         * @return return the next element of the tree.
-         * @throws throw an Underflow exception if there is no next element in the tree.
-         */
-        @Override
-        public E next() throws OutOfBounds {
-            if(hasNext())
-            return  q.get(index++).getItem();
-            else throw new OutOfBounds("arg0");
-        }
-        
-        /**Create a queue and get every element of the tree by using add method to traverse this tree. 
-         * @param root the type is BinTree<E>.
-         */
-        public BinTreeIterator(BinTree<E> root){
-            if(!root.isEmpty()) q.add(root);
-            while(index < q.size()){
-                if(!q.get(index).getLeft().isEmpty()){
-                    q.add(q.get(index).getLeft());
+
+        result[root] = 0;
+
+        Queue<Integer> q = new LinkedList<Integer>();
+
+        int matrix[][] = g.getEdgeMatrix();
+
+        q.add(root);
+
+        while(!q.isEmpty()){
+
+            int x = q.remove();
+
+            for(int i =0; i<g.getNumberOfVertices(); i++){
+
+                if(matrix[x][i] == 1 && result[i] ==-1){
+
+                    q.add(i);
+
+                    result[i] =result[x]+1;
+
                 }
-                if(!q.get(index).getRight().isEmpty()){
-                    q.add(q.get(index).getRight());
-                }
-                index ++;
+
             }
-            index = 0;
+
         }
 
+        return result;
+
     }
+
+
+
+    
+
+    /**
+
+     * Get the start and finish time of each vertex. 
+
+     * @param g graph.
+
+     * @param root starting vertex.
+
+     * @return int[][] the type is int[][].
+
+     */
+
+    @Override
+
+    public int[][] getTimes(Graph g, int root) {
+
+        int matrix[][] = g.getEdgeMatrix();
+
+        result = new int[g.getNumberOfVertices()][2];
+
+        result[root][0] = 0;
+
+        result[root][1] = endTime(matrix,root,g, root);
+
+    
+
+        return result;
+
+
+
+    }
+
+
+
+    
+
+    /**
+
+     * Get endtime of each vertex.
+
+     * @param matrix type is int[][].
+
+     * @param check vertex needs to be checked.
+
+     * @param g graph.
+
+     * @param root starting vertex.
+
+     * @return int the type is int.
+
+     */
+
+    private int endTime( int[][] matrix, int check, Graph g, int root){
+
+        int time = result[root][1] +1;
+
+        for(int i =0; i<g.getNumberOfVertices(); i++){
+
+            if(matrix[check][i] == 1 && result[i][1] == 0){
+
+                result[check][0] =time;
+
+                result[check][1] = endTime(matrix,check,g, root);
+
+            }
+
+        }
+
+        return time;
+
+    }
+
 }
+
